@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion } from "framer-motion";
-import { Flame, Trophy, Calendar, User, BarChart2 } from "lucide-react";
+import { Flame, Trophy, User, BarChart2 } from "lucide-react";
 import { useAuthStore } from "@/lib/stores";
 import { Drawer } from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";

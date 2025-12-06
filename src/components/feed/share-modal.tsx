@@ -4,7 +4,7 @@ import React, { useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import download from "downloadjs";
 import { motion } from "framer-motion";
-import { Download, Share2, Loader2 } from "lucide-react";
+import { Download, Loader2 } from "lucide-react";
 import { useFeedStore, useUIStore } from "@/lib/stores";
 import { Drawer } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
@@ -30,7 +30,7 @@ export function ShareModal() {
                 pixelRatio: 2, // High res
                 backgroundColor: "#000", // Ensure black background
             });
-            download(dataUrl, `spilltea-${confession.id}.png`);
+            download(dataUrl, `spilltea - ${confession.id}.png`);
         } catch (error) {
             console.error("Failed to generate image:", error);
         } finally {

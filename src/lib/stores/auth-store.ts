@@ -62,9 +62,11 @@ export const useAuthStore = create<AuthState>()(
                 set({ isLoading: true });
 
                 try {
-                    console.log("Calling firebaseSignInAnonymously...");
                     const result = await firebaseSignInAnonymously(auth);
-                    console.log("Firebase auth result:", result.user.uid);
+
+                    console.log("Anonymous sign-in result:", result);
+
+
                     set({
                         user: result.user,
                         isAuthenticated: true,
@@ -86,7 +88,7 @@ export const useAuthStore = create<AuthState>()(
                 const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
                 let newStreak = streak;
-                let newBadges = [...get().badges];
+                const newBadges = [...get().badges];
 
                 if (lastPostedAt) {
                     const lastPost = new Date(lastPostedAt);

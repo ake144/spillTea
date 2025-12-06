@@ -18,21 +18,14 @@ export function ConfessionForm() {
     const { user, anonymousName, isAuthenticated, signInAnonymously, isLoading: authLoading } = useAuthStore();
     const addConfession = useFeedStore((state) => state.addConfession);
 
-    const handleSubmit = async () => {
-        if (!content.trim()) return;
-
-        if (!isAuthenticated) {
-            setShowAuthPrompt(true);
-            return;
-        }
-
+    const submitConfession = async (uid: string, name: string) => {
         setIsSubmitting(true);
 
         try {
             await addConfession(
                 content.trim(),
-                user?.uid || "anonymous",
-                anonymousName || "Anonymous",
+                uid,
+                name,
                 isBurnMode
             );
 
@@ -49,12 +42,29 @@ export function ConfessionForm() {
         }
     };
 
+    const handleSubmit = async () => {
+        if (!content.trim()) return;
+
+        if (!isAuthenticated) {
+            setShowAuthPrompt(true);
+            return;
+        }
+
+        if (user && anonymousName) {
+            await submitConfession(user.uid, anonymousName);
+        }
+    };
+
     const handleAuthAndSubmit = async () => {
         try {
-            console.log("Attempting to sign in...");
             await signInAnonymously();
-            console.log("Sign in successful, submitting...");
-            handleSubmit();
+
+            // Get fresh state directly from store
+            const { user: freshUser, anonymousName: freshName } = useAuthStore.getState();
+
+            if (freshUser && freshName) {
+                await submitConfession(freshUser.uid, freshName);
+            }
         } catch (error) {
             console.error("Auth failed:", error);
             alert("Authentication failed. Check console for details.");

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { collection, query, orderBy, limit, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebase/config";
 import { motion } from "framer-motion";
-import { Flame, Trophy, Medal } from "lucide-react";
+import { Flame, Trophy } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface LeaderboardUser {

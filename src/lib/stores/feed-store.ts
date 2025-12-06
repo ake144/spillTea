@@ -27,6 +27,7 @@ export interface Confession {
     reactionCount: number;
     replyCount: number;
     isBurnMode?: boolean;
+    burnViewLimit?: number;
     gradient: string;
     viewCount: number;
 }
@@ -62,6 +63,8 @@ interface FeedState {
     fetchReplies: (confessionId: string) => Promise<void>;
     addReply: (confessionId: string, content: string, authorId: string, authorName: string) => Promise<void>;
 }
+
+export const REACTION_EMOJIS = ["🔥", "😂", "😢", "😡", "😱", "👀", "❤️", "💀", "✨", "🤔", "👏", "🎉"];
 
 const CONFESSIONS_PER_PAGE = 10;
 

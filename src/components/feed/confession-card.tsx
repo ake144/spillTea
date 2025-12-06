@@ -28,7 +28,7 @@ export function ConfessionCard({ confession, index }: ConfessionCardProps) {
                 )}
             >
                 {/* Burn indicator */}
-                {confession.isBurnAfterReading && (
+                {confession.isBurnMode && (
                     <div className="absolute top-4 right-4 z-10">
                         <motion.div
                             animate={{ opacity: [1, 0.5, 1] }}

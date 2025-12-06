@@ -5,16 +5,35 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "SpillTea | Anonymous Confessions",
-    description: "Spill the tea anonymously. Share your secrets, confessions, and gossip.",
+    title: {
+        default: "SpillTea | Anonymous Confessions",
+        template: "SpillTea | %s",
+    },
+    description: "Share your secrets anonymously. No judgment, just vibes. Join the tea party today.",
     manifest: "/manifest.json",
-    themeColor: "#0a0a0f",
-    keywords: ["confessions", "anonymous", "secrets", "stories"],
+    keywords: ["confessions", "anonymous", "secrets", "gossip", "social app", "spill tea"],
     authors: [{ name: "SpillTea" }],
     openGraph: {
         title: "SpillTea - Anonymous Confessions",
         description: "Share your secrets anonymously. No judgment, just vibes.",
+        url: "https://spilltea.app",
+        siteName: "SpillTea",
+        images: [
+            {
+                url: "/og-image.png", // Ensure this exists or use a placeholder
+                width: 1200,
+                height: 630,
+                alt: "SpillTea Preview",
+            },
+        ],
+        locale: "en_US",
         type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "SpillTea - Anonymous Confessions",
+        description: "Share your secrets anonymously. No judgment, just vibes.",
+        images: ["/og-image.png"],
     },
 };
 

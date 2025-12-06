@@ -45,7 +45,7 @@ export function DailyPrompt() {
                 <div className="flex items-start justify-between">
                     <div className="flex items-center gap-2 text-neon-pink">
                         <Sparkles className="w-4 h-4" />
-                        <span className="text-xs font-bold uppercase tracking-wider">Today's Tea</span>
+                        <span className="text-xs font-bold uppercase tracking-wider">Today&apos;s Tea</span>
                     </div>
                     <button
                         onClick={() => setIsVisible(false)}

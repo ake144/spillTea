@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Sparkles, X } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useAuthStore, useUIStore } from "@/lib/stores";
 import { Button } from "@/components/ui/button";
 import {
