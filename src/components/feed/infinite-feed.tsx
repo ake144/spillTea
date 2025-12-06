@@ -59,11 +59,34 @@ export function InfiniteFeed() {
             const cardHeight = window.innerHeight;
             const currentIndex = Math.round(scrollTop / cardHeight);
             setCurrentConfessionIndex(currentIndex);
+
+            // Save to history
+            const currentConfession = confessions[currentIndex];
+            if (currentConfession) {
+                const historyItem = {
+                    id: currentConfession.id,
+                    content: currentConfession.content,
+                    createdAt: currentConfession.createdAt
+                };
+
+                const existingHistory = localStorage.getItem("spilltea_history");
+                let history = existingHistory ? JSON.parse(existingHistory) : [];
+
+                // Remove if exists (to move to top)
+                // Remove if exists (to move to top)
+                history = history.filter((h: { id: string }) => h.id !== currentConfession.id);
+                // Add to top
+                history.unshift(historyItem);
+                // Keep last 20
+                history = history.slice(0, 20);
+
+                localStorage.setItem("spilltea_history", JSON.stringify(history));
+            }
         };
 
         feed.addEventListener("scroll", handleScroll);
         return () => feed.removeEventListener("scroll", handleScroll);
-    }, [setCurrentConfessionIndex]);
+    }, [setCurrentConfessionIndex, confessions]);
 
     // Error state
     if (error) {

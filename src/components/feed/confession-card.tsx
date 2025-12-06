@@ -6,6 +6,8 @@ import { Flame, Eye, Clock, Share2 } from "lucide-react";
 import { Confession, useFeedStore, useUIStore } from "@/lib/stores";
 import { ReactionBar } from "./reaction-bar";
 import { cn, formatTimeAgo } from "@/lib/utils";
+import { useTextToSpeech } from "@/lib/hooks/use-tts";
+import { Volume2 } from "lucide-react";
 
 interface ConfessionCardProps {
     confession: Confession;
@@ -14,6 +16,7 @@ interface ConfessionCardProps {
 
 export function ConfessionCard({ confession, index }: ConfessionCardProps) {
     const totalReactions = Object.values(confession.reactions).reduce((a, b) => a + b, 0);
+    const { isSpeaking, toggle } = useTextToSpeech({ text: confession.content });
 
     return (
         <div className="snap-item flex items-center justify-center p-4 md:p-8">
@@ -113,6 +116,26 @@ export function ConfessionCard({ confession, index }: ConfessionCardProps) {
                             >
                                 <Share2 className="w-4 h-4" />
                                 <span>Share</span>
+                            </button>
+
+                            {/* TTS Button */}
+                            <button
+                                onClick={toggle}
+                                className={cn(
+                                    "p-3 rounded-xl transition-colors flex items-center justify-center",
+                                    isSpeaking ? "bg-primary/20 text-primary" : "bg-white/5 hover:bg-white/10 text-foreground/80"
+                                )}
+                            >
+                                {isSpeaking ? (
+                                    <motion.div
+                                        animate={{ scale: [1, 1.2, 1] }}
+                                        transition={{ duration: 1, repeat: Infinity }}
+                                    >
+                                        <Volume2 className="w-5 h-5" />
+                                    </motion.div>
+                                ) : (
+                                    <Volume2 className="w-5 h-5" />
+                                )}
                             </button>
                         </div>
                     </div>
