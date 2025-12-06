@@ -2,8 +2,8 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Flame, Eye, Clock } from "lucide-react";
-import { Confession, useFeedStore } from "@/lib/stores";
+import { Flame, Eye, Clock, Share2 } from "lucide-react";
+import { Confession, useFeedStore, useUIStore } from "@/lib/stores";
 import { ReactionBar } from "./reaction-bar";
 import { cn, formatTimeAgo } from "@/lib/utils";
 
@@ -90,19 +90,31 @@ export function ConfessionCard({ confession, index }: ConfessionCardProps) {
                             reactions={confession.reactions}
                         />
 
-                        {/* Reply Button */}
-                        <button
-                            onClick={() => useFeedStore.getState().setActiveConfessionId(confession.id)}
-                            className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-sm font-medium text-foreground/80"
-                        >
-                            <span>💬</span>
-                            <span>
-                                {confession.replyCount ?
-                                    `View ${confession.replyCount} Whisper${confession.replyCount === 1 ? '' : 's'}` :
-                                    "Whisper a reply..."
-                                }
-                            </span>
-                        </button>
+                        {/* Actions */}
+                        <div className="flex gap-3">
+                            {/* Reply Button */}
+                            <button
+                                onClick={() => useFeedStore.getState().setActiveConfessionId(confession.id)}
+                                className="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-sm font-medium text-foreground/80"
+                            >
+                                <span>💬</span>
+                                <span>
+                                    {confession.replyCount ?
+                                        `${confession.replyCount}` :
+                                        "Reply"
+                                    }
+                                </span>
+                            </button>
+
+                            {/* Share Button */}
+                            <button
+                                onClick={() => useUIStore.getState().openShareModal(confession.id)}
+                                className="flex-1 py-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-center gap-2 text-sm font-medium text-foreground/80"
+                            >
+                                <Share2 className="w-4 h-4" />
+                                <span>Share</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { InfiniteFeed, ReplyModal } from "@/components/feed";
+import { InfiniteFeed, ReplyModal, ShareModal } from "@/components/feed";
 import { ConfessionForm } from "@/components/create";
 import { Navigation, AuthPrompt, ProfileDrawer } from "@/components/shared";
 import { useAuthStore, useUIStore } from "@/lib/stores";
@@ -29,6 +29,7 @@ export default function Home() {
             {/* Modals */}
             <ConfessionForm />
             <ReplyModal />
+            <ShareModal />
             <ProfileDrawer isOpen={isProfileOpen} onClose={closeProfile} />
             <AuthPrompt />
         </div>

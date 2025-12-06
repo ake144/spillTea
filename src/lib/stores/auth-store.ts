@@ -1,60 +1,55 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import {
-    signInAnonymously as firebaseSignInAnonymously,
-    onAuthStateChanged,
-    User
-} from "firebase/auth";
-import { auth } from "@/lib/firebase/config";
-import { generateAnonymousName } from "@/lib/utils";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { User, signInAnonymously as firebaseSignInAnonymously } from 'firebase/auth';
+import { doc, setDoc, Timestamp } from 'firebase/firestore';
+import { auth, db } from '@/lib/firebase/config';
+import { generateAnonymousName } from '@/lib/utils';
 
 interface AuthState {
     user: User | null;
-    anonymousName: string | null;
     isAuthenticated: boolean;
     isLoading: boolean;
-    isInitialized: boolean;
+    anonymousName: string | null;
     streak: number;
-    lastPostedAt: number | null; // Timestamp
+    lastPostedAt: string | null;
     badges: string[];
     signInAnonymously: () => Promise<void>;
     initializeAuth: () => void;
-    updateStreak: () => void;
+    updateStreak: () => Promise<void>;
+    syncUserToFirestore: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>()(
     persist(
         (set, get) => ({
             user: null,
-            anonymousName: null,
             isAuthenticated: false,
-            isLoading: false,
-            isInitialized: false,
-            streak: 0,
+            isLoading: true,
+            anonymousName: null,
+            streak: 1,
             lastPostedAt: null,
             badges: [],
 
             initializeAuth: () => {
-                if (typeof window === "undefined" || !auth) return;
-
-                onAuthStateChanged(auth, (user) => {
+                const unsubscribe = auth.onAuthStateChanged((user) => {
                     if (user) {
                         set({
                             user,
                             isAuthenticated: true,
                             isLoading: false,
-                            isInitialized: true,
                             anonymousName: get().anonymousName || generateAnonymousName(),
                         });
+                        // Sync on load
+                        get().syncUserToFirestore();
                     } else {
                         set({
                             user: null,
                             isAuthenticated: false,
                             isLoading: false,
-                            isInitialized: true,
                         });
                     }
                 });
+                return unsubscribe;
             },
 
             signInAnonymously: async () => {
@@ -76,6 +71,8 @@ export const useAuthStore = create<AuthState>()(
                         anonymousName: get().anonymousName || generateAnonymousName(),
                         isLoading: false,
                     });
+                    // Sync on sign in
+                    get().syncUserToFirestore();
                 } catch (error) {
                     console.error("Anonymous sign-in failed:", error);
                     set({ isLoading: false });
@@ -83,44 +80,76 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
-            updateStreak: () => {
-                const now = Date.now();
-                const { lastPostedAt, streak, badges } = get();
+            updateStreak: async () => {
+                const { lastPostedAt, streak, user, anonymousName } = get();
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-                if (!lastPostedAt) {
-                    set({ streak: 1, lastPostedAt: now });
-                    return;
-                }
+                let newStreak = streak;
+                let newBadges = [...get().badges];
 
-                const lastDate = new Date(lastPostedAt);
-                const currentDate = new Date(now);
+                if (lastPostedAt) {
+                    const lastPost = new Date(lastPostedAt);
+                    const lastPostDate = new Date(lastPost.getFullYear(), lastPost.getMonth(), lastPost.getDate());
 
-                // Check if same day
-                if (lastDate.toDateString() === currentDate.toDateString()) {
-                    return; // Already posted today
-                }
+                    const diffTime = Math.abs(today.getTime() - lastPostDate.getTime());
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-                // Check if consecutive day (yesterday)
-                const yesterday = new Date(now);
-                yesterday.setDate(yesterday.getDate() - 1);
-
-                if (lastDate.toDateString() === yesterday.toDateString()) {
-                    const newStreak = streak + 1;
-                    const newBadges = [...badges];
-
-                    // Award badges
-                    if (newStreak === 3 && !badges.includes("3-day-fire")) newBadges.push("3-day-fire");
-                    if (newStreak === 7 && !badges.includes("7-day-fire")) newBadges.push("7-day-fire");
-
-                    set({ streak: newStreak, lastPostedAt: now, badges: newBadges });
+                    if (diffDays === 1) {
+                        newStreak += 1;
+                    } else if (diffDays > 1) {
+                        newStreak = 1;
+                    }
                 } else {
-                    // Streak broken
-                    set({ streak: 1, lastPostedAt: now });
+                    newStreak = 1;
+                }
+
+                // Check for badges
+                if (newStreak === 3 && !newBadges.includes("3-day-fire")) newBadges.push("3-day-fire");
+                if (newStreak === 7 && !newBadges.includes("7-day-fire")) newBadges.push("7-day-fire");
+
+                set({
+                    streak: newStreak,
+                    lastPostedAt: now.toISOString(),
+                    badges: newBadges
+                });
+
+                // Sync to Firestore
+                if (user && db) {
+                    try {
+                        const userRef = doc(db, "users", user.uid);
+                        await setDoc(userRef, {
+                            anonymousName,
+                            streak: newStreak,
+                            badges: newBadges,
+                            lastPostedAt: now,
+                            updatedAt: Timestamp.now()
+                        }, { merge: true });
+                    } catch (error) {
+                        console.error("Failed to sync user stats:", error);
+                    }
                 }
             },
+
+            syncUserToFirestore: async () => {
+                const { user, anonymousName, streak, badges } = get();
+                if (!user || !db) return;
+
+                try {
+                    const userRef = doc(db, "users", user.uid);
+                    await setDoc(userRef, {
+                        anonymousName,
+                        streak,
+                        badges,
+                        updatedAt: Timestamp.now()
+                    }, { merge: true });
+                } catch (error) {
+                    console.error("Failed to sync user:", error);
+                }
+            }
         }),
         {
-            name: "spilltea-auth",
+            name: 'auth-storage',
             partialize: (state) => ({
                 anonymousName: state.anonymousName,
                 streak: state.streak,

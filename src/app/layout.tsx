@@ -5,8 +5,10 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "SpillTea - Anonymous Confessions",
-    description: "Share your secrets anonymously. No judgment, just vibes.",
+    title: "SpillTea | Anonymous Confessions",
+    description: "Spill the tea anonymously. Share your secrets, confessions, and gossip.",
+    manifest: "/manifest.json",
+    themeColor: "#0a0a0f",
     keywords: ["confessions", "anonymous", "secrets", "stories"],
     authors: [{ name: "SpillTea" }],
     openGraph: {
