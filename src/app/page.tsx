@@ -26,7 +26,7 @@ export default function Home() {
             <div className="fixed inset-0 bg-gradient-radial from-primary/5 via-transparent to-transparent pointer-events-none" />
 
             {/* Sidebar */}
-            <AppSidebar />
+            {/* <AppSidebar /> */}
 
             {/* Navigation */}
             <Navigation />

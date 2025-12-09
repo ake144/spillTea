@@ -72,6 +72,11 @@ export function AppSidebar() {
         }
     }, []);
 
+    const handleView = (id: string) => {
+        // Logic to view the confession, e.g., navigate or open modal
+        console.log("View confession:", id);
+    }   
+
     const toggleSidebar = () => setIsOpen(!isOpen);
 
     return (
@@ -93,14 +98,13 @@ export function AppSidebar() {
             <button
                 onClick={toggleSidebar}
                 className={cn(
-                    "fixed top-4 z-50 p-2.5 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 text-white transition-all duration-300 hover:bg-white/10 hover:scale-105 active:scale-95 shadow-lg",
+                    "fixed cursor-pointer top-4 z-50 p-2.5 rounded-full bg-black/40 backdrop-blur-xl border border-white/10 text-white transition-all duration-300 hover:bg-white/10 hover:scale-105 active:scale-95 shadow-lg",
                     isOpen ? "left-[260px]" : "left-4"
                 )}
             >
                 {isOpen ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
             </button>
 
-            {/* Sidebar Container */}
             <motion.div
                 initial={false}
                 animate={{ x: isOpen ? 0 : -300 }}
@@ -155,6 +159,7 @@ export function AppSidebar() {
                                 recentSpills.map((item: SidebarItem) => (
                                     <button
                                         key={item.id}
+                                        onClick={() => handleView(item.id)}
                                         className="w-full text-left p-3 rounded-xl hover:bg-white/5 transition-all group border border-transparent hover:border-white/5"
                                     >
                                         <p className="text-sm text-white/80 truncate group-hover:text-white font-medium">
@@ -178,6 +183,7 @@ export function AppSidebar() {
                     </p>
                 </div>
             </motion.div>
+
         </>
     );
 }
