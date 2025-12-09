@@ -155,7 +155,7 @@
 
   /* Snap scroll for TikTok-style feed */
   .snap-feed {
-    @apply snap-y snap-mandatory overflow-y-auto h-screen;
+    @apply snap-y snap-mandatory overflow-y-auto ;
   }
 
   .snap-item {

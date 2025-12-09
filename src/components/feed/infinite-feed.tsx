@@ -57,6 +57,9 @@ export function InfiniteFeed() {
         const handleScroll = () => {
             const scrollTop = feed.scrollTop;
             const cardHeight = window.innerHeight;
+
+            console.log("Scroll Top:", scrollTop, "Card Height:", cardHeight);
+
             const currentIndex = Math.round(scrollTop / cardHeight);
             setCurrentConfessionIndex(currentIndex);
 
@@ -104,7 +107,7 @@ export function InfiniteFeed() {
             </div>
         );
     }
-
+ 
     // Empty state
     if (!isLoading && confessions.length === 0) {
         return (
@@ -128,12 +131,12 @@ export function InfiniteFeed() {
     return (
         <div
             ref={feedRef}
-            className="snap-feed hide-scrollbar h-screen overflow-y-scroll snap-y snap-mandatory"
+            className="snap-feed hide-scrollbar h-overflow-y-scroll snap-y snap-mandatory"
         >
-            <div className="pt-20 pb-24 px-4 max-w-lg mx-auto min-h-screen">
+            <div className="pt-20 pb-24 px-4 md:max-w-4xl max-w-lg mx-auto  mt-22">
                 <DailyPrompt />
 
-                <AnimatePresence mode="popLayout">
+                <AnimatePresence >
                     {confessions.map((confession, index) => (
                         <div
                             key={confession.id}
